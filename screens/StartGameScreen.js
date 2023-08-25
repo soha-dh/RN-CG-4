@@ -8,14 +8,40 @@ const StartGamaScreen = props => {
 
     //? all input default type is string you have to convert it if you need number
     const [enteredValue, setEnteredValue] = useState('');
+    const [confirmed, setConfirmed] = useState(false);
+    const [selectedNumber, setSelectedNumber] = useState();
+
 
     //? inputText comes from input (onChangeText)
     const numberInputHandler = inputText => {
         //? setEntereddValue(inputText) <-- this is normaly , but we need to validate first now 
         //? here we use regular Exprestion ( /[^0-9]/g, '' )--> replace any thing not number with '' 
         setEnteredValue(inputText.replace(/[^0-9]/g, ''));
+    };
+
+    const resetInputHandler = () => {
+        setEnteredValue('');
+        setConfirmed(false);
+    }
+
+    const confirmInputHandler = () => {
+        const chosenNumber = parseInt(enteredValue);
+        if (chosenNumber === NaN || chosenNumber <= 0 || chosenNumber > 99) {
+            return;
+        }
+
+        setConfirmed(true);
+        setSelectedNumber(chosenNumber);
+        setEnteredValue('');
 
     };
+
+    let confirmedOutput;
+
+    if (confirmed) {
+        confirmedOutput = <Text>Chosen Number: {selectedNumber}</Text>
+
+    }
 
     return (
         <TouchableWithoutFeedback onPress={() => {
@@ -35,11 +61,12 @@ const StartGamaScreen = props => {
                         value={enteredValue}
                     />
                     <View style={styles.buttonContainer}>
-                        <View style={styles.button}><Button title="Reset" onPress={() => { }} color={Colors.secondary} /></View>
-                        <View style={styles.button}><Button title="Confirm" onPress={() => { }} color={Colors.primary} /></View>
+                        <View style={styles.button}><Button title="Reset" onPress={resetInputHandler} color={Colors.secondary} /></View>
+                        <View style={styles.button}><Button title="Confirm" onPress={confirmInputHandler} color={Colors.primary} /></View>
                     </View>
 
                 </Card>
+                {confirmedOutput}
             </View>
         </TouchableWithoutFeedback>
     );
