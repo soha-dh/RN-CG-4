@@ -1,5 +1,8 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState, useRef, } from "react";
+import { View, Text, StyleSheet, Button, Alert } from 'react-native';
+
+import NumberContaner from "../components/NumberContainer";
+import Card from "../components/Card";
 
 const generateRandomBetween = (min, max, exclude) => {
     min = Math.ceil(min);
@@ -17,10 +20,57 @@ const generateRandomBetween = (min, max, exclude) => {
 
 const GameScreen = props => {
     const [currentGuess, setCurrentGuess] = useState(generateRandomBetween(1, 100, props.userChoice));
-}
+
+
+    const currentLow = useRef(1);
+    const currentHigh = useRef(100);
+
+
+
+    const nextGuessHandler = direction => {
+        if ((direction === 'lower' && currentGuess < props.userChoice) || (direction === 'greater' && currentGuess > props.userChoice)) {
+            Alert.alert('Dont Lie', 'You know that this is wrong...', [{ text: 'Sorry!', style: 'cancel' }]);
+            return;
+        }
+        if (direction === 'lower') {
+            currentHigh.current = currentGuess;
+        } else {
+            currentLow.current = currentGuess;
+        }
+        const nextNumer = generateRandomBetween(currentLow.current, currentHigh.current, currentGuess);
+        setCurrentGuess(nextNumer);
+
+
+    }
+
+
+    return (
+        <View style={styles.screen}>
+            <Text> Computer Guess </Text>
+            <NumberContaner>{currentGuess}</NumberContaner>
+            <Card style={styles.buttonContainer}>
+                <Button title="LOWER" onPress={nextGuessHandler.bind(this, 'lower')} />
+                <Button title="GRATER" onPress={nextGuessHandler.bind(this, 'greater')} />
+            </Card>
+        </View>
+
+    );
+};
 
 const styles = StyleSheet.create({
+    screen: {
+        flex: 1,
+        padding: 10,
+        alignItems: "center"
+    },
+    buttonContainer: {
+        flexDirection: "row",
+        justifyContent: "space-around",
+        marginTop: 20,
+        width: 300,
+        maxWidth: '80%',
 
+    }
 })
 
 export default GameScreen;
